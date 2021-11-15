@@ -1,0 +1,23 @@
+{% url 'posts:create-new-post-view' as path_to_post_create %}
+{% url 'posts:create-new-post-view' as path_to_ask %}
+
+<div class="ui container">
+    {% if request.path != path_to_ask %}
+    {% if request.user.is_authenticated %}
+    <form action="{{path_to_post_create}}">
+        <button type="submit" class="ui button positive">Ask!</button>
+    </form>
+    {% else %}
+        <h1>Register to ask</h1>
+    {% endif %}
+    {% endif %}
+    <h1>Trending</h1>
+    <div class="ui grid">
+        {% for tr_question in trending_questions %}
+        <div class="row">
+            <div class="column">{{tr_question.rating}}</div>
+            <div class="ten wide column"><a href="{{tr_question.get_absolute_url}}">{{tr_question.header}}</a></div>
+        </div>
+        {% endfor %}
+    </div>
+</div>

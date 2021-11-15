@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}
+my profile
+{% endblock title %}
+
+{% block content %}
+
+{% if confirm %}
+    <div class="ui green message">Your profile has been updated</div>
+{% endif %}
+<h1> Login: {{profile.login}}</h1>
+<div class="image content">
+    <div class="ui small image">
+      <img src="{{profile.avatar.url}}">
+    </div>
+</div>
+<div class="description">
+    <form action="" method="POST" class="ui form" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{form.as_p}}
+        <button type="submit" class="ui positive button">Save</button>
+    </form>
+</div>
+{% endblock content %}
+
+{% block script %}
+{% endblock script %}

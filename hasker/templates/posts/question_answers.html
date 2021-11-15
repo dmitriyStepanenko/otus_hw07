@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}
+questions and answers
+{% endblock title %}
+
+{% block content %}
+<div class="ui segment">
+    <div class="ui grid">
+        <div class="row">
+            <div class="two wide column center aligned">
+                {% if request.user.is_authenticated %}
+                <form action="{% url 'posts:question-like-view'%}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="question_id" value={{question.id}}>
+                    <p><button type="submit" class="ui icon button"><i class="chevron up icon"></i></button></p>
+                </form>
+                {% endif %}
+                <p>{{question.num_likes}}</p>
+                {% if request.user.is_authenticated %}
+                <form action="{% url 'posts:question-dislike-view'%}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="question_id" value={{question.id}}>
+                    <p><button type="submit" class="ui icon button"><i class="chevron down icon"></i></button></p>
+                </form>
+                {% endif %}
+            </div>
+            <div class="nine wide column">
+                <h1>{{question.header}}</h1>
+                <p>{{question.text}}</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="six wide column">
+                tags
+            </div>
+            <div class="four wide column right aligned">
+                {{question.author}}
+            </div>
+        </div>
+    </div>
+</div>
+{% for answer in answers %}
+    <div class="ui fluid segment">
+        <div class="ui grid">
+            <div class="row">
+                <div class="two wide column center aligned">
+                    {% if request.user.is_authenticated %}
+                    <form action="{% url 'posts:answer-like-view'%}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="answer_id" value={{answer.id}}>
+                        <p><button type="submit" class="ui icon button"><i class="chevron up icon"></i></button></p>
+                    </form>
+                    {% endif %}
+                    <p>{{answer.num_likes}}</p>
+                    {% if request.user.is_authenticated %}
+                    <form action="{% url 'posts:answer-dislike-view'%}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="answer_id" value={{answer.id}}>
+                        <p><button type="submit" class="ui icon button"><i class="chevron down icon"></i></button></p>
+                    </form>
+                    {% endif %}
+                    {% if answer.chosen_as_correct %}
+                    Right
+                    {% endif %}
+
+                    {% if request.user == question.author.login %}
+                    <form action="{% url 'posts:right-answer-view'%}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="answer_id" value={{answer.id}}>
+                        <p><button type="submit" class="ui icon button">
+                            {% if answer.chosen_as_correct %}
+                            <i class="check circle icon"></i>
+                            {% else %}
+                            <i class="circle outline icon"></i>
+                            {% endif %}
+                        </button></p>
+                    </form>
+                    {% endif %}
+                </div>
+                <div class="nine wide column">
+                    <p>{{answer.text}}</p>
+                    <p>{{answer.author.login}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+<p>Pages</p>
+<p>
+{% for p in answers.paginator.page_range %}
+<a href="?page={{ p }}">{{ p }}</a>
+{% endfor %}
+</p>
+{% if request.user.is_authenticated %}
+<h1>Your answer:</h1>
+<form action="{{question.get_absolute_url}}" method="POST" class="ui form" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{a_form.as_p}}
+    <button type="submit" class="ui positive button">Submit</button>
+</form>
+{% endif %}
+{% endblock content %}

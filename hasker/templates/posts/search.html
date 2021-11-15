@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}
+search
+{% endblock title %}
+
+{% block content %}
+{% for obj in qs %}
+    {% include 'posts/question_card.html' %}
+{% endfor %}
+<p>Pages</p>
+<p>
+{% for p in qs.paginator.page_range %}
+<a href="?page={{ p }}">{{ p }}</a>
+{% endfor %}
+</p>
+{% endblock content %}

@@ -1,2 +1,5 @@
 Django==3.2.8
 psycopg2-binary==2.9.1
+uwsgi==2.0.20
+Pillow==8.4.0
+django-mysql==3.8.1

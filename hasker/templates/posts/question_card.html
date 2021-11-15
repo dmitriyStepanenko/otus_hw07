@@ -1,0 +1,33 @@
+<div class="ui fluid card">
+    <div class="content">
+        <div class="ui grid">
+            <div class="row">
+                <div class="three wide column">
+                    <p>{{obj.num_likes}}</p>
+                    <p>votes</p>
+                </div>
+                <div class="three wide column">
+                    <p>{{obj.num_answers}}</p>
+                    <p>answers</p>
+                </div>
+                <div class="six wide column">
+                    <a href="{{obj.get_absolute_url}}"><p>{{obj.header}}</p></a>
+                        {% if obj.tags %}
+                        {% for tag in obj.get_tag_list %}
+
+                    <form action="{% url 'posts:search-view' %}" method="GET" style="display: inline">
+                        <input type="hidden" name="tag" value={{tag}}>
+                        <button class="ui primary basic button" type="submit">{{tag}}</button>
+                        </form>&nbsp;
+
+                        {% endfor %}
+                        {% endif %}
+                </div>
+                <div class="three wide column">
+                    <p>{{obj.author.login}}</p>
+                    <p>{{obj.created}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

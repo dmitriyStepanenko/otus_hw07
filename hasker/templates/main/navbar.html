@@ -1,0 +1,39 @@
+{% url 'posts:main-post-view' as path_to_home %}
+{% url 'profiles:my-profile-view' as path_to_my_profile %}
+
+<div class="ui inverted menu nav mb-7">
+  <div class="ui container">
+    <a href="{{path_to_home}}" class="{% if request.path == path_to_home %}active{% endif %} item">
+        <h3>hAsker</h3>
+    </a>
+
+    <div class="right menu">
+        <div class="item">
+              <form action="{% url 'posts:search-view' %}" method="GET">
+                  <div class="ui action left icon input">
+                  <input type="text" name='q' placeholder="...", value="{% if tag %}tag:{{tag}}{% else %}{{s_question}}{% endif %}">
+                  <i class="search icon"></i>
+                  <button type='submit' class="ui button">Search</button>
+                  </div>
+            </form>
+            </div>
+        {% if request.user.is_authenticated %}
+            <a href="{{path_to_my_profile}}" class="{% if request.path == path_to_my_profile %}active{% endif %} item">
+                <img src={{avatar_picture.url}} class="ui avatar image">&nbsp;
+                 {{ request.user }}
+            </a>
+
+            <a href="{% url 'logout' %}" class="ui item">
+                Logout
+            </a>
+        {% else %}
+            <a href="{% url 'profiles:signup' %}" class="ui item">
+                Sign Up
+            </a>
+            <a href="{% url 'login' %}" class="ui item">
+                Login
+            </a>
+        {% endif %}
+    </div>
+  </div>
+</div>
