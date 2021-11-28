@@ -114,8 +114,15 @@ MEDIA_ROOT = BASE_DIR / 'static_cdn' / 'media_root'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# start login settins
+
 LOGIN_REDIRECT_URL = 'posts:main-post-view'
 LOGOUT_REDIRECT_URL = 'posts:main-post-view'
+
+# end login settins
+
+
+# start email settings
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -123,3 +130,5 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
+
+# end email settings
