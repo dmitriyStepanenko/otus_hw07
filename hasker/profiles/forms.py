@@ -1,6 +1,5 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
 from .models import Profile
 
 
@@ -15,7 +14,7 @@ class RegistrationForm(UserCreationForm):
     avatar = forms.ImageField(label='avatar', required=False)
 
     class Meta:
-        model = User
+        model = Profile
         fields = ('username', 'email', 'password1', 'password2', 'avatar')
 
     def save(self, commit=True):

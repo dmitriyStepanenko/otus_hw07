@@ -49,7 +49,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'profiles.context_processors.profile_pic',
                 'posts.context_processors.trending'
             ],
         },
@@ -132,3 +131,5 @@ EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 
 # end email settings
+
+AUTH_USER_MODEL = 'profiles.Profile'
