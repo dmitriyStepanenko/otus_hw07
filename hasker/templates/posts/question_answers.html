@@ -86,12 +86,14 @@ questions and answers
         </div>
     </div>
 {% endfor %}
+
 <p>Pages</p>
 <p>
 {% for p in answers.paginator.page_range %}
 <a href="?page={{ p }}">{{ p }}</a>
 {% endfor %}
 </p>
+
 {% if request.user.is_authenticated %}
 <h1>Your answer:</h1>
 <form action="{{question.get_absolute_url}}" method="POST" class="ui form" enctype="multipart/form-data">

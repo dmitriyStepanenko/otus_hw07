@@ -5,12 +5,10 @@ Questions
 {% endblock title %}
 
 {% block content %}
-&nbsp;
 <form action="" method="GET" style="display: inline">
     <input type="hidden" name='q_sort' value="new">
     <button type="submit" class="ui primary button">New questions</button>
 </form>
-&nbsp;
 <form action="" method="GET" style="display: inline">
     <input type="hidden" name='q_sort' value="hot">
     <button type="submit" class="ui primary button">Hot questions</button>
@@ -19,12 +17,7 @@ Questions
 {% for obj in qs %}
     {% include 'posts/question_card.html' %}
 {% endfor %}
-<p>Pages</p>
-<p>
-{% for p in qs.paginator.page_range %}
-<a href="?page={{ p }}">{{ p }}</a>
-{% endfor %}
-</p>
 
+{% include 'posts/pages.html' %}
 
 {% endblock content %}

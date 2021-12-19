@@ -5,8 +5,6 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <!--Custom css-->
     <link rel="stylesheet" type="text/css" href={% static 'style.css' %}
     <!-- semantic UI -->
@@ -17,7 +15,7 @@
     <title>hAsker - {% block title %}{% endblock title %}</title>
   </head>
   <body>
-    {% include 'main/navbar.html' %}
+    {% include 'bars/navbar.html' %}
     <div class="ui grid">
       <div class="row">
         <div class="nine wide column">
@@ -27,11 +25,13 @@
           </div>
         </div>
         <div class="three wide column">
-          {% include 'main/right_bar.html' %}
+          {% include 'bars/right_bar.html' %}
         </div>
       </div>
     </div>
 
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     {% block scripts %}
     {% endblock scripts %}
 

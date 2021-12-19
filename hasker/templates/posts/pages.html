@@ -1,0 +1,6 @@
+<p>Pages</p>
+<p>
+{% for p in qs.paginator.page_range %}
+<a href="?page={{ p }}">{{ p }}</a>
+{% endfor %}
+</p>

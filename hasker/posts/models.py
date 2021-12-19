@@ -1,9 +1,10 @@
+from typing import List
+
 from django.db import models
 from django.shortcuts import reverse
 from django.core.exceptions import ValidationError
-from profiles.models import Profile
 
-import re
+from profiles.models import Profile
 
 
 class Tag(models.Model):
@@ -44,29 +45,26 @@ class Question(models.Model):
                 raise ValidationError('Not allowed equal tag words')
 
     @property
-    def rating(self):
-        return self.liked.all().count() - self.unliked.all().count()
+    def rating(self) -> int:
+        return self.liked.count() - self.unliked.count()
 
-    def get_tag_list(self):
+    def get_tag_list(self) -> List[str]:
         return str(self.tags).replace(' ', '').split(',')
 
-    def get_answers(self):
+    def get_answers(self) -> List:
         return self.answer_set.all()
 
-    def is_right_answer(self):
+    def is_right_answer(self) -> bool:
         for answer in self.get_answers():
             if answer.chosen_as_correct:
                 return True
         return False
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         return reverse("posts:question-answers-view", kwargs={"header": self.header})
 
-    def num_likes(self):
-        return self.liked.all().count()-self.unliked.all().count()
-
-    def num_answers(self):
-        return self.answer_set.all().count()
+    def num_answers(self) -> int:
+        return self.answer_set.count()
 
 
 class Answer(models.Model):
@@ -84,10 +82,7 @@ class Answer(models.Model):
 
     @property
     def rating(self):
-        return self.liked.all().count() - self.unliked.all().count()
-
-    def num_likes(self):
-        return self.liked.all().count()-self.unliked.all().count()
+        return self.liked.count() - self.unliked.count()
 
     def __str__(self):
         return f'{self.author}-{self.text[:20]}'

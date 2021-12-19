@@ -1,17 +1,17 @@
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.core.mail import send_mail
+from django.db import transaction
+
 from .models import Question, Answer, Tag
 from .forms import QuestionModelForm
 from .forms import AnswerModelForm
-from profiles.models import Profile
-from django.conf import settings
+from .utils import send_email, change_rating
 
 
 def questions_list_view(request):
     questions = Question.objects.all()
-    page_num = request.GET.get('page')
+    page_num = request.GET.get('page') or 1
 
     if request.method == 'GET':
         q_sort = request.GET.get('q_sort') or 'new'
@@ -29,12 +29,11 @@ def questions_list_view(request):
 @login_required
 def create_post(request):
     p_form = QuestionModelForm(request.POST or None)
-    profile = Profile.objects.get(login=request.user)
 
     if request.method == 'POST':
         if p_form.is_valid():
             instance = p_form.save(commit=False)
-            instance.author = profile
+            instance.author = request.user
             instance.save()
 
             for tag in instance.get_tag_list():
@@ -51,6 +50,9 @@ def create_post(request):
 def question_answers_view(request, header=None):
 
     question = Question.objects.get(header=header)
+    if not question:
+        redirect('posts:main-post-view')
+
     answers = Answer.objects.filter(question=question)
     answers = sorted(answers, key=lambda item: (item.rating, item.created), reverse=True)
 
@@ -59,26 +61,15 @@ def question_answers_view(request, header=None):
     page_num = request.GET.get('page') or 1
 
     if request.method == 'POST':
-        profile = Profile.objects.get(login=request.user)
-        if profile and a_form.is_valid():
+        user = request.user
+        if user and a_form.is_valid():
             instance = a_form.save(commit=False)
-            instance.author = profile
+            instance.author = user
             instance.question = question
             instance.save()
 
             if question.author.email:
-                subject = 'New answer'
-                message = f'There is new answer to your question "{question.header}" from "{profile.login}".\n' \
-                          f'Link to your question: {question.get_absolute_url()}.\n' \
-                          f'This mail was send automatically please do not answer this mail'
-                send_mail(
-                    subject=subject,
-                    message=message,
-                    from_email=settings.EMAIL_HOST_USER,
-                    recipient_list=[str(question.author.email)],
-                    fail_silently=True
-                )
-                print(message)
+                send_email(question, user)
 
             return redirect('posts:question-answers-view', header=question.header)
 
@@ -91,83 +82,64 @@ def question_answers_view(request, header=None):
 
 
 @login_required
+@transaction.atomic
 def like_unlike_question_view(request):
-    user = request.user
     if request.method == 'POST':
-        question_id = request.POST.get('question_id')
-        question = Question.objects.get(id=question_id)
-        profile = Profile.objects.get(login=user)
+        question = Question.objects.get(id=request.POST.get('question_id'))
+        if not question:
+            redirect('posts:main-post-view')
 
-        if profile in question.liked.all():
-            question.liked.remove(profile)
-        else:
-            question.liked.add(profile)
-            if profile in question.unliked.all():
-                question.unliked.remove(profile)
+        change_rating(request.user, question.liked, question.unliked)
 
         return redirect('posts:question-answers-view', header=question.header)
 
 
 @login_required
+@transaction.atomic
 def dislike_undislike_question_view(request):
-    user = request.user
     if request.method == 'POST':
-        question_id = request.POST.get('question_id')
-        question = Question.objects.get(id=question_id)
-        profile = Profile.objects.get(login=user)
+        question = Question.objects.get(id=request.POST.get('question_id'))
+        if not question:
+            redirect('posts:main-post-view')
 
-        if profile in question.unliked.all():
-            question.unliked.remove(profile)
-        else:
-            question.unliked.add(profile)
-            if profile in question.liked.all():
-                question.liked.remove(profile)
+        change_rating(request.user, question.unliked, question.liked)
 
         return redirect('posts:question-answers-view', header=question.header)
 
 
 @login_required
+@transaction.atomic
 def like_unlike_answer_view(request):
-    user = request.user
     if request.method == 'POST':
-        answer_id = request.POST.get('answer_id')
-        answer = Answer.objects.get(id=answer_id)
-        profile = Profile.objects.get(login=user)
-
-        if profile in answer.liked.all():
-            answer.liked.remove(profile)
-        else:
-            answer.liked.add(profile)
-            if profile in answer.unliked.all():
-                answer.unliked.remove(profile)
+        answer = Answer.objects.get(id=request.POST.get('answer_id'))
+        if not answer:
+            redirect('posts:main-post-view')
+        change_rating(request.user, answer.liked, answer.unliked)
 
         return redirect('posts:question-answers-view', header=answer.question.header)
 
 
 @login_required
+@transaction.atomic
 def dislike_undislike_answer_view(request):
-    user = request.user
     if request.method == 'POST':
-        answer_id = request.POST.get('answer_id')
-        answer = Answer.objects.get(id=answer_id)
-        profile = Profile.objects.get(login=user)
+        answer = Answer.objects.get(id=request.POST.get('answer_id'))
+        if not answer:
+            redirect('posts:main-post-view')
 
-        if profile in answer.unliked.all():
-            answer.unliked.remove(profile)
-        else:
-            answer.unliked.add(profile)
-            if profile in answer.liked.all():
-                answer.liked.remove(profile)
+        change_rating(request.user, answer.unliked, answer.liked)
 
         return redirect('posts:question-answers-view', header=answer.question.header)
 
 
 @login_required
+@transaction.atomic
 def right_answer_view(request):
-    user = request.user
     if request.method == 'POST':
-        answer_id = request.POST.get('answer_id')
-        answer = Answer.objects.get(id=answer_id)
+        answer = Answer.objects.get(id=request.POST.get('answer_id'))
+
+        if not answer:
+            redirect('posts:main-post-view')
 
         for ans in answer.question.get_answers():
             if ans == answer:
@@ -195,9 +167,8 @@ def search_view(request):
             if len(str_q) > 4 and str_q[:4] == 'tag:':
                 return redirect('posts:search-tag-view', tag=str(q)[4:])
             elif len(str_q) > 0:
-                q_s = Question.objects.all()
                 qs = []
-                for question in q_s:
+                for question in Question.objects.all():
                     if str(question.text).find(str_q) != -1 or str(question.header).find(str_q) != -1:
                         qs.append(question)
 

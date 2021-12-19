@@ -9,10 +9,10 @@ my profile
 {% if confirm %}
     <div class="ui green message">Your profile has been updated</div>
 {% endif %}
-<h1> Login: {{profile.login}}</h1>
+<h1> Login: {{profile.username}}</h1>
 <div class="image content">
     <div class="ui small image">
-      <img src="{{profile.avatar.url}}">
+      <img src="{{profile.get_avatar}}">
     </div>
 </div>
 <div class="description">

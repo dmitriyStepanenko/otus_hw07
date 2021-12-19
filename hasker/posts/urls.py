@@ -1,4 +1,4 @@
-from django.urls import path, re_path
+from django.urls import path
 from .views import (
     questions_list_view,
     create_post,
@@ -24,5 +24,5 @@ urlpatterns = [
     path('dislike_answer/', dislike_undislike_answer_view, name='answer-dislike-view'),
     path('right_answer/', right_answer_view, name='right-answer-view'),
     path('tag/<tag>/', search_tag_view, name='search-tag-view'),
-    path('search', search_view, name='search-view'),
+    path('search/', search_view, name='search-view'),
 ]

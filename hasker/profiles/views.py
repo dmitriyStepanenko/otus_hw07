@@ -1,12 +1,13 @@
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
-from .models import Profile
 from .forms import ProfileModelForm, RegistrationForm
 
 
+@login_required
 def my_profile_view(request):
-    profile = Profile.objects.get(login=request.user)
+    profile = request.user
     form = ProfileModelForm(request.POST or None, request.FILES or None, instance=profile)
     confirm = False
 
