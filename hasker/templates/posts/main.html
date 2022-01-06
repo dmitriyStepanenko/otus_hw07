@@ -14,7 +14,7 @@ Questions
     <button type="submit" class="ui primary button">Hot questions</button>
 </form>
 <Br>
-{% for obj in qs %}
+{% for obj in object_list %}
     {% include 'posts/question_card.html' %}
 {% endfor %}
 

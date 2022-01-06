@@ -16,10 +16,15 @@ def send_email(question, profile):
     )
 
 
-def change_rating(user, main_list, coupling_list):
+def change_rating(user, obj, like):
+    main_list, coupling_list = (obj.liked, obj.unliked) if like else (obj.unliked, obj.liked)
     if user in main_list.all():
         main_list.remove(user)
     else:
         main_list.add(user)
         if user in coupling_list.all():
             coupling_list.remove(user)
+
+    obj.update_rating()
+    obj.save()
+

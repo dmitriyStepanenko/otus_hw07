@@ -22,6 +22,7 @@ class Question(models.Model):
 
     liked = models.ManyToManyField(Profile, blank=True, related_name='q_likes')
     unliked = models.ManyToManyField(Profile, blank=True, related_name='q_unlikes')
+    rating = models.IntegerField(default=0)
 
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -44,9 +45,8 @@ class Question(models.Model):
             if tags.count(tag) > 1:
                 raise ValidationError('Not allowed equal tag words')
 
-    @property
-    def rating(self) -> int:
-        return self.liked.count() - self.unliked.count()
+    def update_rating(self):
+        self.rating = self.liked.count() - self.unliked.count()
 
     def get_tag_list(self) -> List[str]:
         return str(self.tags).replace(' ', '').split(',')
@@ -76,13 +76,13 @@ class Answer(models.Model):
 
     liked = models.ManyToManyField(Profile, blank=True, related_name='a_likes')
     unliked = models.ManyToManyField(Profile, blank=True, related_name='a_unlikes')
+    rating = models.IntegerField(default=0)
 
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
-    @property
-    def rating(self):
-        return self.liked.count() - self.unliked.count()
+    def update_rating(self):
+        self.rating = self.liked.count() - self.unliked.count()
 
     def __str__(self):
         return f'{self.author}-{self.text[:20]}'

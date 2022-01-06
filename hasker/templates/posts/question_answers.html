@@ -16,7 +16,7 @@ questions and answers
                     <p><button type="submit" class="ui icon button"><i class="chevron up icon"></i></button></p>
                 </form>
                 {% endif %}
-                <p>{{question.num_likes}}</p>
+                <p>{{question.rating}}</p>
                 {% if request.user.is_authenticated %}
                 <form action="{% url 'posts:question-dislike-view'%}" method="POST">
                     {% csrf_token %}
@@ -40,7 +40,7 @@ questions and answers
         </div>
     </div>
 </div>
-{% for answer in answers %}
+{% for answer in object_list %}
     <div class="ui fluid segment">
         <div class="ui grid">
             <div class="row">
@@ -52,7 +52,7 @@ questions and answers
                         <p><button type="submit" class="ui icon button"><i class="chevron up icon"></i></button></p>
                     </form>
                     {% endif %}
-                    <p>{{answer.num_likes}}</p>
+                    <p>{{answer.rating}}</p>
                     {% if request.user.is_authenticated %}
                     <form action="{% url 'posts:answer-dislike-view'%}" method="POST">
                         {% csrf_token %}
@@ -64,7 +64,7 @@ questions and answers
                     Right
                     {% endif %}
 
-                    {% if request.user == question.author.login %}
+                    {% if request.user == question.author %}
                     <form action="{% url 'posts:right-answer-view'%}" method="POST">
                         {% csrf_token %}
                         <input type="hidden" name="answer_id" value={{answer.id}}>
@@ -80,7 +80,7 @@ questions and answers
                 </div>
                 <div class="nine wide column">
                     <p>{{answer.text}}</p>
-                    <p>{{answer.author.login}}</p>
+                    <p>{{answer.author}}</p>
                 </div>
             </div>
         </div>
@@ -96,9 +96,9 @@ questions and answers
 
 {% if request.user.is_authenticated %}
 <h1>Your answer:</h1>
-<form action="{{question.get_absolute_url}}" method="POST" class="ui form" enctype="multipart/form-data">
+<form action="{% url 'posts:create-answer-view' question.header %}" method="POST" class="ui form" enctype="multipart/form-data">
     {% csrf_token %}
-    {{a_form.as_p}}
+    {{form.as_p}}
     <button type="submit" class="ui positive button">Submit</button>
 </form>
 {% endif %}

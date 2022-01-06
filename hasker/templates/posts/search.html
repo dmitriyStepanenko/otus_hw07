@@ -5,7 +5,7 @@ search
 {% endblock title %}
 
 {% block content %}
-{% for obj in qs %}
+{% for obj in object_list %}
     {% include 'posts/question_card.html' %}
 {% endfor %}
 
